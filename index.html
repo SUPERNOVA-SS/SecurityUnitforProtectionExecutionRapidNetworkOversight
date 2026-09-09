@@ -1,892 +1,159 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>7ZEN CLAN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-base: #000000;
-            --card-bg: rgba(10, 8, 10, 0.72);
-            --card-border: rgba(255, 0, 40, 0.18);
-            --accent: #ff0033;
-            --accent-dim: #7a0018;
-            --accent-glow: rgba(255, 0, 51, 0.5);
-            --text-main: #ffffff;
-            --text-muted: #8a8a92;
-            --success: #00e676;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Tajawal', sans-serif;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-        }
-
-        ::-webkit-scrollbar { display: none; }
-
-        /* ================= المشهد الخلفي: عاصفة ليلية ================= */
-        .scene {
-            position: fixed;
-            inset: 0;
-            z-index: -5;
-            overflow: hidden;
-            background: linear-gradient(to bottom, #000000 0%, #060206 38%, #170307 68%, #000000 100%);
-        }
-
-        .clouds { position: absolute; inset: 0; z-index: -4; }
-        .cloud {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(20,10,14,0.9) 0%, rgba(20,10,14,0) 70%);
-            filter: blur(6px);
-            opacity: 0.7;
-        }
-        .cloud.c1 { width: 480px; height: 160px; top: 4%; left: -20%; animation: driftCloud1 75s linear infinite; }
-        .cloud.c2 { width: 620px; height: 200px; top: 12%; left: -30%; animation: driftCloud2 110s linear infinite; opacity: 0.5; }
-        .cloud.c3 { width: 380px; height: 130px; top: 2%; left: -15%; animation: driftCloud3 95s linear infinite; opacity: 0.6; }
-        @keyframes driftCloud1 { from { transform: translateX(0); } to { transform: translateX(160vw); } }
-        @keyframes driftCloud2 { from { transform: translateX(0); } to { transform: translateX(150vw); } }
-        @keyframes driftCloud3 { from { transform: translateX(0); } to { transform: translateX(170vw); } }
-
-        .sky-word {
-            position: absolute;
-            top: 16%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: clamp(3.5rem, 10vw, 7rem);
-            font-weight: 900;
-            letter-spacing: 10px;
-            color: #ff0033;
-            text-shadow:
-                0 0 20px rgba(255,0,51,0.85),
-                0 0 60px rgba(255,0,51,0.5),
-                0 0 120px rgba(255,0,51,0.25);
-            z-index: -3;
-            animation: skyFloat 6s ease-in-out infinite, skyFlicker 7s ease-in-out infinite;
-            white-space: nowrap;
-        }
-        @keyframes skyFloat {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-14px); }
-        }
-        @keyframes skyFlicker {
-            0%, 92%, 100% { opacity: 1; }
-            93% { opacity: 0.55; }
-            94% { opacity: 1; }
-            96% { opacity: 0.7; }
-            97% { opacity: 1; }
-        }
-
-        .sea {
-            position: absolute;
-            left: 0; right: 0; bottom: 0;
-            height: 34%;
-            z-index: -3;
-            background: linear-gradient(to bottom, #000000 0%, #0a0206 40%, #000000 100%);
-        }
-        .sea::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: repeating-linear-gradient(
-                to bottom,
-                rgba(255,0,51,0.05) 0px,
-                transparent 3px,
-                transparent 14px
-            );
-            animation: seaShimmer 5s ease-in-out infinite;
-        }
-        @keyframes seaShimmer {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.9; }
-        }
-        .horizon-glow {
-            position: absolute;
-            left: 0; right: 0;
-            bottom: 34%;
-            height: 1px;
-            box-shadow: 0 0 40px 8px rgba(255,0,51,0.3);
-            z-index: -3;
-        }
-
-        .silhouette-wrap {
-            position: absolute;
-            bottom: 0;
-            right: 6%;
-            width: min(38vw, 340px);
-            z-index: -2;
-            filter: drop-shadow(0 0 25px rgba(255,0,51,0.12));
-        }
-        .head-group {
-            transform-box: fill-box;
-            transform-origin: 50% 100%;
-            animation: headSway 4.5s ease-in-out infinite;
-        }
-        @keyframes headSway {
-            0%, 100% { transform: rotate(-2.2deg); }
-            50% { transform: rotate(2.6deg); }
-        }
-
-        /* المطر */
-        #rainCanvas {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        #flashOverlay {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 50% 20%, rgba(230,235,255,0.9), rgba(180,190,255,0.25) 45%, transparent 75%);
-            z-index: 997;
-            pointer-events: none;
-            opacity: 0;
-        }
-        #flashOverlay.impact { animation: impactFlash 0.5s ease-out forwards; }
-        @keyframes impactFlash { 0% { opacity: 1; } 100% { opacity: 0; } }
-
-        .lightning-streak {
-            position: fixed;
-            top: -10%;
-            width: 2px;
-            height: 130%;
-            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.95), rgba(190,200,255,0.7), transparent);
-            z-index: 996;
-            pointer-events: none;
-            opacity: 0;
-        }
-        .lightning-streak.strike { animation: strikeAnim 0.45s ease-out forwards; }
-        @keyframes strikeAnim {
-            0% { opacity: 0; } 8% { opacity: 1; } 15% { opacity: 0.15; }
-            22% { opacity: 0.85; } 35% { opacity: 0; } 100% { opacity: 0; }
-        }
-        .thunder-dim { position: fixed; inset: 0; background: #000; opacity: 0; z-index: 995; pointer-events: none; }
-        .thunder-dim.hit { animation: dimPulse 0.5s ease-out forwards; }
-        @keyframes dimPulse { 0% { opacity: 0; } 10% { opacity: 0.35; } 100% { opacity: 0; } }
-
-        /* ================= الهيدر ================= */
-        header {
-            position: fixed;
-            top: 0; left: 0; width: 100%;
-            padding: 16px 34px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--card-border);
-        }
-        .header-right { display: flex; gap: 12px; align-items: center; }
-
-        .btn-discord-top {
-            background: linear-gradient(135deg, #5865F2, #4752c4);
-            color: white;
-            text-decoration: none;
-            padding: 11px 26px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1rem;
-            box-shadow: 0 4px 18px rgba(88, 101, 242, 0.35);
-            transition: all 0.3s ease;
-        }
-        .btn-discord-top:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 10px 28px rgba(88, 101, 242, 0.55); }
-
-        .btn-header-side {
-            background: rgba(255, 0, 51, 0.08);
-            color: var(--text-main);
-            border: 1px solid var(--card-border);
-            padding: 11px 22px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .btn-header-side:hover { background: rgba(255, 0, 51, 0.18); border-color: rgba(255,0,51,0.5); }
-        .btn-back { display: none; }
-
-        /* ================= الصفحات ================= */
-        .page {
-            display: none;
-            width: 100%;
-            height: 100%;
-            padding-top: 70px;
-            position: absolute;
-            top: 0; left: 0;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            padding-bottom: 6vh;
-            opacity: 0;
-            transform: scale(0.98) translateY(10px);
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .page.active { display: flex; opacity: 1; transform: scale(1) translateY(0); }
-
-        @keyframes floatCard { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-        @keyframes pulseDot {
-            0% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
-            70% { box-shadow: 0 0 0 9px rgba(0, 230, 118, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
-        }
-        @keyframes redPulseBorder {
-            0%, 100% { border-color: rgba(255,0,51,0.3); box-shadow: 0 0 14px rgba(255,0,51,0.15); }
-            50% { border-color: rgba(255,0,51,0.8); box-shadow: 0 0 26px rgba(255,0,51,0.4); }
-        }
-        @keyframes buttonShine {
-            0%, 20% { left: -100%; } 40%, 100% { left: 200%; }
-        }
-
-        @keyframes cardImpact {
-            0% { transform: translateY(40px) scale(0.85); opacity: 0; }
-            100% { transform: translateY(0) scale(1); opacity: 1; }
-        }
-
-        .mc-stats-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 26px 30px;
-            margin-bottom: 22px;
-            width: 92%;
-            max-width: 480px;
-            text-align: center;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 16px 50px rgba(0,0,0,0.7);
-            animation: cardImpact 0.7s cubic-bezier(0.2,0.8,0.3,1.1) 0.3s backwards,
-                       floatCard 4.5s ease-in-out 1s infinite,
-                       redPulseBorder 4s ease-in-out infinite;
-        }
-
-        .mc-server-name {
-            font-size: 3.4rem;
-            font-weight: 900;
-            letter-spacing: 4px;
-            color: var(--accent);
-            text-shadow: 0 0 24px rgba(255,0,51,0.6);
-            margin: 0 0 12px 0;
-            line-height: 1;
-        }
-
-        .mc-support-tags {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-        }
-        .tag {
-            background: rgba(255,0,51,0.08);
-            border: 1px solid rgba(255,0,51,0.3);
-            color: #ffb3c0;
-            font-size: 0.82rem;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 20px;
-            animation: redPulseBorder 3.5s ease-in-out infinite;
-        }
-        .tag:nth-child(2) { animation-delay: 1s; }
-        .tag:nth-child(3) { animation-delay: 2s; }
-
-        .mc-ip-box {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--card-border);
-            padding: 12px 18px;
-            border-radius: 14px;
-            font-family: monospace;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .mc-ip-box:hover { background: rgba(255, 0, 51, 0.08); border-color: rgba(255, 0, 51, 0.4); transform: scale(1.02); }
-
-        .mc-status-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1.02rem;
-        }
-        .status-dot { width: 11px; height: 11px; border-radius: 50%; background-color: var(--text-muted); display: inline-block; margin-left: 9px; }
-
-        .main-buttons { display: flex; flex-direction: column; gap: 14px; width: 92%; max-width: 480px; }
-
-        .btn-menu, .btn-vip {
-            position: relative;
-            background: linear-gradient(135deg, rgba(255,0,51,0.10), rgba(0,0,0,0.85));
-            border: 1px solid var(--accent);
-            color: white;
-            border-radius: 16px;
-            cursor: pointer;
-            overflow: hidden;
-            transition: all 0.3s;
-            animation: redPulseBorder 3.5s ease-in-out infinite, cardImpact 0.7s cubic-bezier(0.2,0.8,0.3,1.1) backwards;
-        }
-        .btn-menu { padding: 18px; font-size: 1.15rem; font-weight: 700; animation-delay: 0.6s, 0.6s; }
-        .btn-vip { padding: 21px; font-size: 1.3rem; font-weight: 900; animation-delay: 0.4s, 0.4s; box-shadow: 0 0 20px rgba(255,0,51,0.3); }
-
-        .btn-menu::before, .btn-vip::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 50%; height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.25), transparent);
-            transform: skewX(-25deg);
-            animation: buttonShine 3.5s infinite;
-        }
-        .btn-menu:hover, .btn-vip:hover {
-            box-shadow: 0 0 32px var(--accent-glow);
-            transform: scale(1.02);
-        }
-
-        .content-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(24px);
-            padding: 26px 32px;
-            border-radius: 22px;
-            width: 92%;
-            max-width: 560px;
-            box-shadow: 0 24px 50px rgba(0,0,0,0.7);
-            max-height: 78vh;
-            overflow-y: auto;
-        }
-        .vip-card { border: 1px solid rgba(255,0,51,0.4); }
-        .page-title { font-size: 1.9rem; margin-bottom: 16px; text-align: center; font-weight: 900; color: var(--accent); text-shadow: 0 0 18px rgba(255,0,51,0.5); }
-
-        .form-group { margin-bottom: 13px; text-align: right; }
-        label { display: block; margin-bottom: 5px; color: #d1d1d1; font-weight: 700; font-size: 0.87rem; }
-
-        input[type="text"], textarea, select {
-            width: 100%; padding: 12px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 0, 51, 0.2);
-            border-radius: 11px; color: white; font-size: 0.97rem; transition: all 0.3s;
-        }
-        input[type="text"]:focus, textarea:focus, select:focus {
-            outline: none; border-color: var(--accent); background: rgba(0, 0, 0, 0.6);
-        }
-
-        .img-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .file-upload-box {
-            background: rgba(0, 0, 0, 0.35);
-            border: 2px dashed rgba(255, 0, 51, 0.25);
-            border-radius: 11px; padding: 11px; text-align: center; cursor: pointer;
-            transition: all 0.3s; min-height: 72px; display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .file-upload-box:hover { border-color: var(--accent); background: rgba(255, 0, 51, 0.08); }
-        .file-upload-box .file-title { font-size: 0.82rem; color: #ccc; font-weight: 700; pointer-events: none; }
-        .file-preview { display: none; margin-top: 5px; width: 46px; height: 36px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); }
-
-        .btn-submit {
-            width: 100%; padding: 14px;
-            background: rgba(255, 0, 51, 0.08);
-            color: white; border: 1px solid rgba(255,0,51,0.35);
-            border-radius: 11px; font-size: 1.08rem; font-weight: 900; cursor: pointer; margin-top: 8px; transition: all 0.3s;
-        }
-        .btn-submit:hover { background: rgba(255, 0, 51, 0.18); border-color: var(--accent); }
-        .btn-submit-vip { background: var(--accent); border: none; }
-        .btn-submit-vip:hover { background: #d1002b; }
-
-        .status-msg { margin-top: 8px; padding: 9px; border-radius: 8px; text-align: center; display: none; font-weight: 700; font-size: 0.87rem; }
-        .success { background: rgba(0, 230, 118, 0.15); color: var(--success); border: 1px solid var(--success); }
-        .error { background: rgba(255, 51, 51, 0.15); color: #ff3333; border: 1px solid #ff3333; }
-
-        @media (prefers-reduced-motion: reduce) {
-            .cloud, .sky-word, .sea::before, .head-group, .mc-stats-card, .tag, .btn-menu, .btn-vip,
-            #flashOverlay, .lightning-streak, .thunder-dim, .btn-menu::before, .btn-vip::before {
-                animation: none !important;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<title>S.U.P.E.R.N.O.V.A - Central Hub</title>
+<style>
+    body, html { margin: 0; padding: 0; background-color: #050510; color: #fff; font-family: monospace; overflow-x: hidden; }
+    .bg-image { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; z-index: -1; width: 60%; pointer-events: none; }
+    #galaxy-cursor { position: fixed; width: 40px; height: 40px; border: 1px dashed #4d79ff; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: spin 2s linear infinite; z-index: 9999; box-shadow: 0 0 15px rgba(77, 121, 255, 0.5); }
+    @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+    .container { padding: 40px; max-width: 800px; margin: auto; display: none; }
+    #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    input, button, textarea { background: rgba(0,0,0,0.8); border: 1px solid #4d79ff; color: #fff; padding: 10px; margin: 5px 0; width: 100%; font-family: monospace; box-sizing: border-box; }
+    button { cursor: pointer; background: #0f172a; font-weight: bold; }
+    button:hover { background: #4d79ff; color: #000; }
+    .panel { border: 1px solid #333; padding: 20px; background: rgba(10,10,20,0.8); margin-bottom: 20px; }
+    .warning { color: #ff3333; font-size: 0.9em; margin-top: 10px; }
+    .success { color: #33ff77; font-size: 0.9em; margin-top: 10px; }
+</style>
 </head>
 <body>
+<img src="S.U.P.E.R.N.O.V.A.png" class="bg-image" alt="Background">
+<div id="galaxy-cursor"></div>
 
-    <!-- المشهد -->
-    <div class="scene">
-        <div class="clouds">
-            <div class="cloud c1"></div>
-            <div class="cloud c2"></div>
-            <div class="cloud c3"></div>
-        </div>
-        <div class="sky-word">7ZEN</div>
-        <div class="horizon-glow"></div>
-        <div class="sea"></div>
+<div id="login-screen">
+    <h2>SYSTEM ACCESS</h2>
+    <p>I guarantee that the registration is private and completely secure.</p>
+    <div style="width: 300px;">
+        <input type="text" id="username" placeholder="Enter ID">
+        <button onclick="login()">LOGIN</button>
+    </div>
+</div>
 
-        <div class="silhouette-wrap">
-            <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
-                <!-- البيت -->
-                <polygon points="10,120 70,70 130,120" fill="#000000"/>
-                <rect x="20" y="120" width="100" height="90" fill="#000000"/>
-                <!-- الشخص جالس مستند على الحائط -->
-                <g>
-                    <path d="M120 210 C118 175 122 150 140 140 C150 136 160 140 163 150 C170 148 178 155 176 166 C186 168 190 180 182 188 C186 196 180 208 168 208 Z" fill="#000000"/>
-                    <g class="head-group">
-                        <circle cx="150" cy="128" r="16" fill="#000000"/>
-                    </g>
-                </g>
-            </svg>
-        </div>
+<div id="main-content" class="container">
+    <div class="panel">
+        <h3>SYSTEM UPDATES</h3>
+        <ul>
+            <li>Upcoming Update: Arabic Language Support</li>
+            <li>Upcoming Update: German Language Support</li>
+        </ul>
     </div>
 
-    <canvas id="rainCanvas"></canvas>
-    <div id="flashOverlay"></div>
-    <div class="thunder-dim" id="thunderDim"></div>
-
-    <header>
-        <div class="header-right">
-            <button class="btn-header-side btn-back" id="backBtn" onclick="openPage('home')">⬅ العودة</button>
-            <button class="btn-header-side" id="aboutBtn" onclick="openPage('about')">📖 عن الكلان</button>
-        </div>
-        <a href="https://discord.gg/VeSDuExa23" target="_blank" class="btn-discord-top">👾 سيرفر الكلان</a>
-    </header>
-
-    <!-- 1. الصفحة الرئيسية -->
-    <div id="page-home" class="page active">
-        <div class="mc-stats-card">
-            <h3 class="mc-server-name">BUN</h3>
-
-            <div class="mc-support-tags">
-                <span class="tag">☕ Java (كل الإصدارات)</span>
-                <span class="tag">🎮 Bedrock</span>
-                <span class="tag">🔀 كروس بلاي</span>
-            </div>
-
-            <div class="mc-ip-box" onclick="copyIP()" id="ipBox" title="اضغط لنسخ الأيبي">
-                <span id="ipText">bun-7zen.g4f.gg</span>
-                <span id="copyIcon">📋</span>
-            </div>
-
-            <div class="mc-status-container">
-                <div>
-                    <span class="status-dot" id="mc-dot"></span>
-                    <span id="mc-state">جاري التحقق...</span>
-                </div>
-                <div>
-                    👥 <span id="mc-players-count">0/0</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="main-buttons">
-            <button class="btn-vip" onclick="openPage('apps-menu')">⚡ قائمة التقديمات</button>
-        </div>
+    <div class="panel">
+        <h3>COOPERATION REQUEST</h3>
+        <p>Discord Information & Request Details (English Only)</p>
+        <input type="text" id="discord_id" placeholder="Discord Username#0000" oninput="enforceEnglish(this)">
+        <textarea id="collab_reason" rows="4" placeholder="State your cooperation request strictly..." oninput="enforceEnglish(this); checkContent(this)"></textarea>
+        <button id="submit_btn" onclick="submitRequest()">SUBMIT REQUEST</button>
+        <div id="status_msg"></div>
     </div>
-
-    <!-- 1.5 قائمة التقديمات -->
-    <div id="page-apps-menu" class="page">
-        <div class="content-card" style="text-align: center; background: transparent; border: none; box-shadow: none;">
-            <h2 class="page-title">اختر نوع التقديم</h2>
-            <div class="main-buttons" style="margin: 0 auto;">
-                <button class="btn-vip" onclick="openPage('full')">🔥 تقديم شامل (VIP)</button>
-                <button class="btn-menu" onclick="openPage('map')">🎮 تقديم لعبة / ماب</button>
-                <button class="btn-menu" onclick="openPage('discord')">🛡️ تقديم ديسكورد</button>
-            </div>
-        </div>
+    
+    <div class="panel" id="inbox-panel" style="display:none;">
+        <h3>INBOX NOTIFICATIONS</h3>
+        <div id="inbox-messages"></div>
     </div>
+</div>
 
-    <!-- 2. عن الكلان -->
-    <div id="page-about" class="page">
-        <div class="content-card">
-            <h2 class="page-title">نخبة 7ZEN</h2>
-            <p style="text-align: center; line-height: 2; color: #ccc; font-size: 1.08rem;">
-                نحن مجتمع احترافي يجمع صفوة المبدعين، الإداريين، واللاعبين التنافسيين في مكان واحد.<br>
-                نسعى دائماً لبناء بيئة لعب متكاملة وقوية تسيطر على الساحة.<br><br>
-                <span style="color: var(--accent); font-weight: 700;">"الانضباط، المهارة، والقمة"</span>
-            </p>
-        </div>
-    </div>
+<script>
+    const cursor = document.getElementById('galaxy-cursor');
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+    });
 
-    <!-- 3. التقديم الشامل -->
-    <div id="page-full" class="page">
-        <div class="content-card vip-card">
-            <h2 class="page-title">🔥 التقديم الشامل</h2>
-            <form onsubmit="handleFormSubmit(event, 'شامل')">
-                <div class="form-group">
-                    <input type="text" id="full_user" placeholder="e.g. John_7zen" required>
-                    <label>يوزرك بالديسكورد (إنجليزي فقط)</label>
-                </div>
-                <div class="form-group">
-                    <select id="full_role" required>
-                        <option value="لاعب">لاعب محترف</option>
-                        <option value="صانع محتوى">صانع محتوى</option>
-                        <option value="مطور/إداري">مطور / إداري</option>
-                    </select>
-                    <label>رغبة الانضمام</label>
-                </div>
-                <div class="form-group">
-                    <textarea id="full_skills" rows="2" placeholder="تحدث عن إنجازاتك وخبراتك..." required></textarea>
-                    <label>الخبرات (15 حرف كحد أدنى)</label>
-                </div>
-                <div class="form-group">
-                    <div class="img-grid">
-                        <div class="file-upload-box" onclick="document.getElementById('full_file1').click()">
-                            <input type="file" id="full_file1" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'full_lbl1', 'full_prev1')">
-                            <span class="file-title" id="full_lbl1">📁 صورة رئيسية (إجباري)</span>
-                            <img id="full_prev1" class="file-preview" alt="معاينة">
-                        </div>
-                        <div class="file-upload-box" onclick="document.getElementById('full_file2').click()">
-                            <input type="file" id="full_file2" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'full_lbl2', 'full_prev2')">
-                            <span class="file-title" id="full_lbl2">📁 صورة إضافية (اختياري)</span>
-                            <img id="full_prev2" class="file-preview" alt="معاينة">
-                        </div>
-                    </div>
-                    <label style="margin-top: 5px;">إرفاق الأدلة والصور</label>
-                </div>
-                <button type="submit" class="btn-submit btn-submit-vip" id="btn-full">إرسال الطلب</button>
-                <div id="status-full" class="status-msg"></div>
-            </form>
-        </div>
-    </div>
+    if(localStorage.getItem('user_logged_in')) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        checkInbox();
+    }
 
-    <!-- 4. تقديم لعبة / ماب -->
-    <div id="page-map" class="page">
-        <div class="content-card">
-            <h2 class="page-title">🎮 تقديم لعبة / ماب</h2>
-            <form onsubmit="handleFormSubmit(event, 'لعبة')">
-                <div class="form-group">
-                    <input type="text" id="map_user" placeholder="e.g. Alex" required>
-                    <label>يوزرك بالديسكورد</label>
-                </div>
-                <div class="form-group">
-                    <input type="text" id="map_name" placeholder="اسم اللعبة أو الماب..." required>
-                    <label>اسم اللعبة / الماب</label>
-                </div>
-                <div class="form-group">
-                    <textarea id="map_skills" rows="2" placeholder="اشرح فكرة اللعبة ومميزاتها البرمجية..." required></textarea>
-                    <label>تفاصيل اللعبة</label>
-                </div>
-                <div class="form-group">
-                    <div class="img-grid">
-                        <div class="file-upload-box" onclick="document.getElementById('map_file1').click()">
-                            <input type="file" id="map_file1" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'map_lbl1', 'map_prev1')">
-                            <span class="file-title" id="map_lbl1">📁 صورة رئيسية (إجباري)</span>
-                            <img id="map_prev1" class="file-preview" alt="معاينة">
-                        </div>
-                        <div class="file-upload-box" onclick="document.getElementById('map_file2').click()">
-                            <input type="file" id="map_file2" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'map_lbl2', 'map_prev2')">
-                            <span class="file-title" id="map_lbl2">📁 صورة إضافية (اختياري)</span>
-                            <img id="map_prev2" class="file-preview" alt="معاينة">
-                        </div>
-                    </div>
-                    <label style="margin-top: 5px;">إرفاق صور اللعبة</label>
-                </div>
-                <button type="submit" class="btn-submit" id="btn-map">إرسال الطلب</button>
-                <div id="status-map" class="status-msg"></div>
-            </form>
-        </div>
-    </div>
+    function login() {
+        const user = document.getElementById('username').value;
+        if(user.trim() !== "") {
+            localStorage.setItem('user_logged_in', user);
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+            checkInbox();
+        }
+    }
 
-    <!-- 5. تقديم ديسكورد -->
-    <div id="page-discord" class="page">
-        <div class="content-card">
-            <h2 class="page-title">🛡️ تقديم ديسكورد</h2>
-            <form onsubmit="handleFormSubmit(event, 'ديسكورد')">
-                <div class="form-group">
-                    <input type="text" id="discord_user" placeholder="e.g. Sam_99" required>
-                    <label>يوزرك بالديسكورد</label>
-                </div>
-                <div class="form-group">
-                    <textarea id="discord_skills" rows="2" placeholder="خبرتك في إدارة السيرفرات والبوتات..." required></textarea>
-                    <label>الخبرات التقنية / الإدارية</label>
-                </div>
-                <div class="form-group">
-                    <div class="img-grid">
-                        <div class="file-upload-box" onclick="document.getElementById('discord_file1').click()">
-                            <input type="file" id="discord_file1" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'discord_lbl1', 'discord_prev1')">
-                            <span class="file-title" id="discord_lbl1">📁 صورة رئيسية (إجباري)</span>
-                            <img id="discord_prev1" class="file-preview" alt="معاينة">
-                        </div>
-                        <div class="file-upload-box" onclick="document.getElementById('discord_file2').click()">
-                            <input type="file" id="discord_file2" accept="image/*" style="display:none" onchange="handleFileSelect(this, 'discord_lbl2', 'discord_prev2')">
-                            <span class="file-title" id="discord_lbl2">📁 صورة إضافية (اختياري)</span>
-                            <img id="discord_prev2" class="file-preview" alt="معاينة">
-                        </div>
-                    </div>
-                    <label style="margin-top: 5px;">إرفاق أدلة الخبرة</label>
-                </div>
-                <button type="submit" class="btn-submit" id="btn-discord">إرسال الطلب</button>
-                <div id="status-discord" class="status-msg"></div>
-            </form>
-        </div>
-    </div>
+    function enforceEnglish(field) {
+        field.value = field.value.replace(/[^a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g, '');
+    }
 
-    <script>
-        const WEBHOOK_URL = "https://discord.com/api/webhooks/1533808438709325926/vE8jSEOp61zjjvL4-59VBjojSnDitD0ro9XOU89SCb1EiHXbhwuubOwlWZOri85648C6";
+    const badWords = ["noob", "idiot", "stupid", "dumb", "fool"]; 
 
-        function openPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            setTimeout(() => { document.getElementById('page-' + pageId).classList.add('active'); }, 50);
+    function checkContent(field) {
+        let text = field.value.toLowerCase();
+        let isBanned = badWords.some(word => text.includes(word));
+        
+        if(isBanned) {
+            let blockUntil = Date.now() + (6 * 60 * 1000); 
+            localStorage.setItem('block_time', blockUntil);
+            field.value = "";
+            applyBlock();
+        }
+    }
 
-            const backBtn = document.getElementById('backBtn');
-            const aboutBtn = document.getElementById('aboutBtn');
+    function applyBlock() {
+        let blockTime = localStorage.getItem('block_time');
+        if(blockTime && Date.now() < blockTime) {
+            document.getElementById('submit_btn').disabled = true;
+            document.getElementById('discord_id').disabled = true;
+            document.getElementById('collab_reason').disabled = true;
+            document.getElementById('status_msg').innerHTML = "<span class='warning'>SECURITY TRIGGERED. ACCESS BLOCKED FOR 6 MINUTES.</span>";
+            setTimeout(applyBlock, 1000);
+        } else {
+            document.getElementById('submit_btn').disabled = false;
+            document.getElementById('discord_id').disabled = false;
+            document.getElementById('collab_reason').disabled = false;
+            document.getElementById('status_msg').innerHTML = "";
+            localStorage.removeItem('block_time');
+        }
+    }
+    applyBlock();
 
-            if (pageId === 'home') {
-                backBtn.style.display = 'none';
-                aboutBtn.style.display = 'block';
-            } else if (pageId === 'about') {
-                backBtn.style.display = 'block';
-                aboutBtn.style.display = 'none';
-            } else {
-                backBtn.style.display = 'block';
-                aboutBtn.style.display = 'block';
-            }
+    function submitRequest() {
+        let lastSubmit = localStorage.getItem('last_submit_time');
+        if(lastSubmit && Date.now() < parseInt(lastSubmit) + (24 * 60 * 60 * 1000)) {
+            document.getElementById('status_msg').innerHTML = "<span class='warning'>You must wait 24 hours before submitting another request.</span>";
+            return;
         }
 
-        function copyIP() {
-            navigator.clipboard.writeText('bun-7zen.g4f.gg');
-            const ipBox = document.getElementById('ipBox');
-            const copyIcon = document.getElementById('copyIcon');
-            ipBox.style.borderColor = "var(--success)";
-            copyIcon.innerText = "✅";
-            setTimeout(() => {
-                ipBox.style.borderColor = "var(--card-border)";
-                copyIcon.innerText = "📋";
-            }, 2000);
+        let discord = document.getElementById('discord_id').value;
+        let reason = document.getElementById('collab_reason').value;
+        
+        if(!discord || !reason) return;
+
+        let requests = JSON.parse(localStorage.getItem('supernova_requests') || '[]');
+        let newReq = { id: Date.now(), user: localStorage.getItem('user_logged_in'), discord: discord, reason: reason, status: 'pending' };
+        requests.push(newReq);
+        localStorage.setItem('supernova_requests', JSON.stringify(requests));
+        localStorage.setItem('last_submit_time', Date.now());
+
+        document.getElementById('discord_id').value = "";
+        document.getElementById('collab_reason').value = "";
+        document.getElementById('status_msg').innerHTML = "<span class='success'>Wait for your request, it will be in the accept/reject list. You will be notified if you return to the site. It may take up to two days. If not accepted or rejected, you can submit another request.</span>";
+    }
+
+    function checkInbox() {
+        let responses = JSON.parse(localStorage.getItem('supernova_responses') || '[]');
+        let user = localStorage.getItem('user_logged_in');
+        let myResponses = responses.filter(r => r.user === user);
+        
+        if(myResponses.length > 0) {
+            document.getElementById('inbox-panel').style.display = 'block';
+            let html = "";
+            myResponses.forEach(r => {
+                let color = r.status === 'ACCEPTED' ? '#33ff77' : '#ff3333';
+                html += `<div style="border-left: 3px solid ${color}; padding-left: 10px; margin-bottom: 10px;">
+                            <strong>${r.status}</strong><br>${r.message}
+                         </div>`;
+            });
+            document.getElementById('inbox-messages').innerHTML = html;
         }
-
-        function handleFileSelect(input, labelId, previewId) {
-            const file = input.files[0];
-            const label = document.getElementById(labelId);
-            const preview = document.getElementById(previewId);
-            if (file) {
-                let fileName = file.name;
-                if (fileName.length > 12) fileName = fileName.substring(0, 9) + '...';
-                label.innerText = "📎 " + fileName;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'inline-block';
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        async function fetchMCStats() {
-            const stateEl = document.getElementById('mc-state');
-            const dotEl = document.getElementById('mc-dot');
-            const playersEl = document.getElementById('mc-players-count');
-            try {
-                let res = await fetch('https://api.mcsrvstat.us/3/bun-7zen.g4f.gg');
-                let data = await res.json();
-                if (!data.online) {
-                    let bedrockRes = await fetch('https://api.mcsrvstat.us/bedrock/3/bun-7zen.g4f.gg');
-                    let bedrockData = await bedrockRes.json();
-                    if(bedrockData.online) data = bedrockData;
-                }
-                if (data.online) {
-                    stateEl.innerText = "متصل";
-                    stateEl.style.color = "var(--success)";
-                    dotEl.style.backgroundColor = "var(--success)";
-                    dotEl.style.animation = "pulseDot 2s infinite";
-                    playersEl.innerText = `${data.players.online}/${data.players.max}`;
-                } else {
-                    stateEl.innerText = "مغلق";
-                    stateEl.style.color = "#ff3333";
-                    dotEl.style.backgroundColor = "#ff3333";
-                    dotEl.style.animation = "none";
-                    playersEl.innerText = "0/0";
-                }
-            } catch(e) {
-                stateEl.innerText = "خطأ بالاتصال";
-                dotEl.style.backgroundColor = "var(--text-muted)";
-                dotEl.style.animation = "none";
-            }
-        }
-        fetchMCStats();
-        setInterval(fetchMCStats, 30000);
-
-        async function getUserIP() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                return data.ip;
-            } catch (e) { return 'مخفي'; }
-        }
-
-        async function handleFormSubmit(e, type) {
-            e.preventDefault();
-            let prefix = type === 'شامل' ? 'full' : (type === 'لعبة' ? 'map' : 'discord');
-            let user = document.getElementById(`${prefix}_user`).value.trim();
-            let skills = document.getElementById(`${prefix}_skills`).value.trim();
-            let statusDiv = document.getElementById(`status-${prefix}`);
-            let submitBtn = document.getElementById(`btn-${prefix}`);
-
-            const englishRegex = /^[a-zA-Z0-9_.\- ]{2,}$/;
-            if (!englishRegex.test(user)) { showMsg(statusDiv, "❌ يوزرك يجب أن يكون بالإنجليزي.", "error"); return; }
-            if (skills.length < 15) { showMsg(statusDiv, "❌ التفاصيل قصيرة جداً.", "error"); return; }
-
-            let mapName = "";
-            if (type === 'لعبة') {
-                mapName = document.getElementById("map_name").value.trim();
-                if (mapName.length < 3) { showMsg(statusDiv, "❌ اسم اللعبة قصير جداً.", "error"); return; }
-            }
-
-            let file1 = document.getElementById(`${prefix}_file1`).files[0];
-            let file2 = document.getElementById(`${prefix}_file2`).files[0];
-            if (!file1) { showMsg(statusDiv, "❌ يرجى إرفاق الصورة الرئيسية كحد أدنى.", "error"); return; }
-
-            const userIP = await getUserIP();
-            let isVIP = (type === 'شامل');
-
-            const embed = {
-                title: isVIP ? "🔥 طلب تقديم شامل" : `🎮 طلب تقديم (${type})`,
-                color: isVIP ? 16711765 : 16758531,
-                fields: [
-                    { name: "👤 العضو", value: `\`${user}\``, inline: true },
-                    { name: "📌 النوع", value: `**${type}**`, inline: true },
-                    { name: "🌐 IP", value: `||${userIP}||`, inline: true }
-                ],
-                footer: { text: "7ZEN CLAN" },
-                timestamp: new Date().toISOString()
-            };
-
-            if (isVIP) embed.fields.push({ name: "🎯 الرغبة", value: `**${document.getElementById("full_role").value}**`, inline: false });
-            if (type === 'لعبة') embed.fields.push({ name: "🎮 اسم اللعبة", value: mapName, inline: false });
-            embed.fields.push({ name: "⚡ التفاصيل", value: skills, inline: false });
-
-            const formData = new FormData();
-            formData.append('files[0]', file1, file1.name);
-            embed.image = { url: `attachment://${file1.name}` };
-            if (file2) {
-                formData.append('files[1]', file2, file2.name);
-                embed.fields.push({ name: "🖼️ صورة إضافية", value: `[${file2.name}](attachment://${file2.name})`, inline: false });
-            }
-            formData.append('payload_json', JSON.stringify({ embeds: [embed] }));
-
-            submitBtn.disabled = true;
-            submitBtn.innerText = "جاري رفع الملفات وإرسال الطلب ⏳...";
-            try {
-                const response = await fetch(WEBHOOK_URL, { method: "POST", body: formData });
-                if (response.ok) {
-                    showMsg(statusDiv, "✅ تم إرسال الطلب والملفات بنجاح!", "success");
-                    e.target.reset();
-                    document.querySelectorAll('.file-preview').forEach(p => p.style.display = 'none');
-                    document.querySelectorAll('.file-title').forEach((lbl, idx) => {
-                        lbl.innerText = idx % 2 === 0 ? "📁 صورة رئيسية (إجباري)" : "📁 صورة إضافية (اختياري)";
-                    });
-                    setTimeout(() => openPage('home'), 2000);
-                } else throw new Error("Failed");
-            } catch (err) {
-                showMsg(statusDiv, "❌ حدث خطأ أثناء الرفع، يرجى المحاولة لاحقاً.", "error");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "إرسال الطلب";
-            }
-        }
-
-        function showMsg(element, text, type) {
-            element.innerText = text;
-            element.className = `status-msg ${type}`;
-            element.style.display = "block";
-            setTimeout(() => { element.style.display = "none"; }, 4000);
-        }
-
-        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        /* ---- ومضة دخول ---- */
-        if (!reduceMotion) {
-            requestAnimationFrame(() => document.getElementById('flashOverlay').classList.add('impact'));
-        }
-
-        /* ---- رعد وبرق عشوائي (كل 7-15 ثانية) ---- */
-        function triggerThunder() {
-            if (reduceMotion) return;
-            const bolt = document.createElement('div');
-            bolt.className = 'lightning-streak strike';
-            bolt.style.left = (10 + Math.random() * 80) + '%';
-            bolt.style.transform = `rotate(${(Math.random() * 10 - 5)}deg)`;
-            document.body.appendChild(bolt);
-            setTimeout(() => bolt.remove(), 550);
-
-            const dim = document.getElementById('thunderDim');
-            dim.classList.remove('hit'); void dim.offsetWidth; dim.classList.add('hit');
-
-            if (Math.random() > 0.45) {
-                setTimeout(() => {
-                    const bolt2 = document.createElement('div');
-                    bolt2.className = 'lightning-streak strike';
-                    bolt2.style.left = (10 + Math.random() * 80) + '%';
-                    bolt2.style.transform = `rotate(${(Math.random() * 10 - 5)}deg)`;
-                    document.body.appendChild(bolt2);
-                    setTimeout(() => bolt2.remove(), 550);
-                }, 110);
-            }
-        }
-        function scheduleThunder() {
-            const delay = 7000 + Math.random() * 8000;
-            setTimeout(() => { triggerThunder(); scheduleThunder(); }, delay);
-        }
-        scheduleThunder();
-
-        /* ---- المطر ---- */
-        (function rain() {
-            const canvas = document.getElementById('rainCanvas');
-            const ctx = canvas.getContext('2d');
-            let w, h, drops = [];
-            const COUNT = 160;
-
-            function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-            window.addEventListener('resize', resize);
-            resize();
-
-            function makeDrop(initial) {
-                return {
-                    x: Math.random() * (w + 200) - 100,
-                    y: initial ? Math.random() * h : -20,
-                    len: 10 + Math.random() * 18,
-                    speed: 6 + Math.random() * 7,
-                    drift: 1.4 + Math.random() * 0.6,
-                    alpha: 0.08 + Math.random() * 0.22
-                };
-            }
-            for (let i = 0; i < COUNT; i++) drops.push(makeDrop(true));
-
-            function draw() {
-                ctx.clearRect(0, 0, w, h);
-                ctx.strokeStyle = 'rgba(200,210,230,0.5)';
-                ctx.lineWidth = 1;
-                for (const d of drops) {
-                    d.x += d.drift;
-                    d.y += d.speed;
-                    ctx.beginPath();
-                    ctx.moveTo(d.x, d.y);
-                    ctx.lineTo(d.x - d.drift * 2.2, d.y + d.len);
-                    ctx.strokeStyle = `rgba(190,200,225,${d.alpha})`;
-                    ctx.stroke();
-                    if (d.y > h + 20) Object.assign(d, makeDrop(false));
-                }
-                if (!reduceMotion) requestAnimationFrame(draw);
-            }
-            if (!reduceMotion) requestAnimationFrame(draw); else ctx.clearRect(0,0,w,h);
-        })();
-    </script>
+    }
+</script>
 </body>
 </html>

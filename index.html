@@ -17,7 +17,7 @@
     .container { padding: 40px; max-width: 900px; margin: auto; display: none; }
     #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
     
-    input, button, textarea, select { background: rgba(0,0,0,0.85); border: 1px solid #4d79ff; color: #fff; padding: 12px; margin: 8px 0; width: 100%; font-family: monospace; box-sizing: border-box; }
+    input, button, textarea { background: rgba(0,0,0,0.85); border: 1px solid #4d79ff; color: #fff; padding: 12px; margin: 8px 0; width: 100%; font-family: monospace; box-sizing: border-box; }
     button { cursor: pointer; background: #0f172a; font-weight: bold; transition: 0.2s; }
     button:hover { background: #4d79ff; color: #000; }
     
@@ -26,7 +26,6 @@
     .hero h1 { font-size: 2.2em; color: #fff; letter-spacing: 3px; margin-bottom: 10px; }
     .hero p { color: #4d79ff; font-size: 1.1em; letter-spacing: 1px; }
 
-    /* Modal List */
     #status-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
     .modal-content { background: #0a0e1a; border: 2px solid #4d79ff; width: 90%; max-width: 600px; padding: 30px; position: relative; box-shadow: 0 0 30px rgba(77, 121, 255, 0.3); }
     .translate-btn { background: #4d79ff; color: #000; border: none; padding: 5px 12px; float: right; cursor: pointer; font-weight: bold; }
@@ -97,7 +96,6 @@
     </div>
 </div>
 
-<!-- Status Popup Modal -->
 <div id="status-modal">
     <div class="modal-content">
         <button class="translate-btn" onclick="toggleTranslation()">TRANSLATE / ترجمة</button>
@@ -112,7 +110,9 @@
 
 <script>
     let isArabic = false;
+    const sysChannel = new BroadcastChannel('supernova_net');
     const cursor = document.getElementById('galaxy-cursor');
+    
     document.addEventListener('mousemove', (e) => {
         cursor.style.left = e.clientX + 'px';
         cursor.style.top = e.clientY + 'px';
@@ -143,7 +143,6 @@
         field.value = field.value.replace(/[^a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g, '');
     }
 
-    // Advanced Ultra-Fast Security Pattern Matching Engine
     const bannedPatterns = [/noob/i, /idiot/i, /stupid/i, /dumb/i, /fool/i, /hack/i, /bypass/i, /trash/i, /abuse/i, /f[u*@]ck/i, /s[h*@]it/i, /b[i*@]tch/i];
 
     function scanInput(field) {
@@ -188,15 +187,27 @@
         let reason = document.getElementById('collab_reason').value.trim();
         if(!discord || !reason) return;
 
+        let currentUser = localStorage.getItem('user_logged_in') || 'GUEST_OPERATIVE';
         let requests = JSON.parse(localStorage.getItem('supernova_requests') || '[]');
-        let newReq = { id: Date.now(), user: localStorage.getItem('user_logged_in'), discord: discord, reason: reason, status: 'pending' };
+        
+        let newReq = { 
+            id: Date.now(), 
+            user: currentUser, 
+            discord: discord, 
+            reason: reason, 
+            status: 'pending' 
+        };
+        
         requests.push(newReq);
         localStorage.setItem('supernova_requests', JSON.stringify(requests));
         localStorage.setItem('last_submit_time', Date.now());
 
+        // Instant Broadcast Signal to Admin Panel
+        sysChannel.postMessage({ type: 'DATA_UPDATED' });
+
         document.getElementById('discord_id').value = "";
         document.getElementById('collab_reason').value = "";
-        document.getElementById('status_msg').innerHTML = "<span class='success'>Request transmitted. Check Status Center for updates.</span>";
+        document.getElementById('status_msg').innerHTML = "<span class='success'>Request transmitted to Command Center.</span>";
         openStatusModal();
     }
 
@@ -274,13 +285,13 @@
         }
     }
 
-    // Real-Time Auto-Sync Engine (Syncs every 2 seconds)
-    setInterval(() => {
-        applyBlock();
+    sysChannel.onmessage = () => {
         if(document.getElementById('status-modal').style.display === 'flex') {
             renderModalContent();
         }
-    }, 2000);
+    };
+    window.addEventListener('storage', () => renderModalContent());
+    setInterval(applyBlock, 2000);
 </script>
 </body>
 </html>

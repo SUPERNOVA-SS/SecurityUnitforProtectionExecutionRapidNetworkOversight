@@ -2,20 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>S.U.P.E.R.N.O.V.A - Central Hub</title>
+<title>S.U.P.E.R.N.O.V.A - Central Command</title>
 <style>
     body, html { margin: 0; padding: 0; background-color: #050510; color: #fff; font-family: monospace; overflow-x: hidden; }
-    .bg-image { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.15; z-index: -1; width: 60%; pointer-events: none; }
-    #galaxy-cursor { position: fixed; width: 40px; height: 40px; border: 1px dashed #4d79ff; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: spin 2s linear infinite; z-index: 9999; box-shadow: 0 0 15px rgba(77, 121, 255, 0.5); }
+    .bg-image { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.12; z-index: -1; width: 65%; pointer-events: none; }
+    #galaxy-cursor { position: fixed; width: 45px; height: 45px; border: 1px dashed #4d79ff; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); animation: spin 1.5s linear infinite; z-index: 9999; box-shadow: 0 0 20px rgba(77, 121, 255, 0.6); }
     @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-    .container { padding: 40px; max-width: 800px; margin: auto; display: none; }
-    #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-    input, button, textarea { background: rgba(0,0,0,0.8); border: 1px solid #4d79ff; color: #fff; padding: 10px; margin: 5px 0; width: 100%; font-family: monospace; box-sizing: border-box; }
-    button { cursor: pointer; background: #0f172a; font-weight: bold; }
+    
+    nav { background: rgba(10, 15, 30, 0.95); border-bottom: 1px solid #4d79ff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    nav .logo { font-size: 1.2em; font-weight: bold; color: #4d79ff; letter-spacing: 2px; }
+    nav .menu button { background: transparent; border: 1px solid #333; color: #aaa; padding: 8px 15px; margin-left: 5px; cursor: pointer; }
+    nav .menu button.active, nav .menu button:hover { border-color: #4d79ff; color: #fff; background: rgba(77,121,255,0.1); }
+
+    .container { padding: 40px; max-width: 900px; margin: auto; display: none; }
+    #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
+    
+    input, button, textarea, select { background: rgba(0,0,0,0.85); border: 1px solid #4d79ff; color: #fff; padding: 12px; margin: 8px 0; width: 100%; font-family: monospace; box-sizing: border-box; }
+    button { cursor: pointer; background: #0f172a; font-weight: bold; transition: 0.2s; }
     button:hover { background: #4d79ff; color: #000; }
-    .panel { border: 1px solid #333; padding: 20px; background: rgba(10,10,20,0.8); margin-bottom: 20px; }
-    .warning { color: #ff3333; font-size: 0.9em; margin-top: 10px; }
-    .success { color: #33ff77; font-size: 0.9em; margin-top: 10px; }
+    
+    .panel { border: 1px solid #222; padding: 25px; background: rgba(8, 12, 24, 0.85); margin-bottom: 25px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+    .hero { text-align: center; padding: 60px 20px; border: 1px solid #4d79ff; background: rgba(15, 23, 42, 0.6); margin-bottom: 30px; }
+    .hero h1 { font-size: 2.2em; color: #fff; letter-spacing: 3px; margin-bottom: 10px; }
+    .hero p { color: #4d79ff; font-size: 1.1em; letter-spacing: 1px; }
+
+    /* Modal List */
+    #status-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
+    .modal-content { background: #0a0e1a; border: 2px solid #4d79ff; width: 90%; max-width: 600px; padding: 30px; position: relative; box-shadow: 0 0 30px rgba(77, 121, 255, 0.3); }
+    .translate-btn { background: #4d79ff; color: #000; border: none; padding: 5px 12px; float: right; cursor: pointer; font-weight: bold; }
+    
+    .warning { color: #ff3333; font-size: 0.9em; margin-top: 10px; font-weight: bold; }
+    .success { color: #33ff77; font-size: 0.9em; margin-top: 10px; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -23,39 +40,78 @@
 <div id="galaxy-cursor"></div>
 
 <div id="login-screen">
-    <h2>SYSTEM ACCESS</h2>
-    <p>I guarantee that the registration is private and completely secure.</p>
-    <div style="width: 300px;">
-        <input type="text" id="username" placeholder="Enter ID">
-        <button onclick="login()">LOGIN</button>
+    <h2 style="letter-spacing: 4px; color: #4d79ff;">S.U.P.E.R.N.O.V.A SECURITY</h2>
+    <p style="color: #888;">I guarantee that the registration is private and completely secure.</p>
+    <div style="width: 320px;">
+        <input type="text" id="username" placeholder="Enter Access ID">
+        <button onclick="login()">INITIALIZE SYSTEM</button>
     </div>
 </div>
 
-<div id="main-content" class="container">
-    <div class="panel">
-        <h3>SYSTEM UPDATES</h3>
-        <ul>
-            <li>Upcoming Update: Arabic Language Support</li>
-            <li>Upcoming Update: German Language Support</li>
-        </ul>
+<div id="app" style="display:none;">
+    <nav>
+        <div class="logo">S.U.P.E.R.N.O.V.A</div>
+        <div class="menu">
+            <button onclick="showTab('home')" class="active" id="tab-home">MAIN</button>
+            <button onclick="showTab('coop')" id="tab-coop">COOPERATION</button>
+            <button onclick="showTab('updates')" id="tab-updates">UPDATES</button>
+            <button onclick="openStatusModal()" style="border-color:#33ff77; color:#33ff77;">STATUS CENTER</button>
+        </div>
+    </nav>
+
+    <div id="sec-home" class="container" style="display:block;">
+        <div class="hero">
+            <h1>S.U.P.E.R.N.O.V.A DIVISION</h1>
+            <p>WE PROTECT YOUR GAMES OR ANYTHING BELONGING TO YOU</p>
+        </div>
+        <div class="panel">
+            <h3>SYSTEM CAPABILITIES</h3>
+            <ul>
+                <li>Automated Threat Neutralization Engine</li>
+                <li>Advanced Encryption & Identity Shielding</li>
+                <li>Real-Time Incursion Monitoring</li>
+            </ul>
+        </div>
     </div>
 
-    <div class="panel">
-        <h3>COOPERATION REQUEST</h3>
-        <p>Discord Information & Request Details (English Only)</p>
-        <input type="text" id="discord_id" placeholder="Discord Username#0000" oninput="enforceEnglish(this)">
-        <textarea id="collab_reason" rows="4" placeholder="State your cooperation request strictly..." oninput="enforceEnglish(this); checkContent(this)"></textarea>
-        <button id="submit_btn" onclick="submitRequest()">SUBMIT REQUEST</button>
-        <div id="status_msg"></div>
+    <div id="sec-coop" class="container">
+        <div class="panel">
+            <h3>COOPERATION REQUEST PORTAL</h3>
+            <p style="color:#888;">Strict Requirement: Discord Details & Reason (English Only)</p>
+            <input type="text" id="discord_id" placeholder="Discord Username (e.g. user#0000)" oninput="enforceEnglish(this); scanInput(this)">
+            <textarea id="collab_reason" rows="5" placeholder="State your cooperation request in details..." oninput="enforceEnglish(this); scanInput(this)"></textarea>
+            <button id="submit_btn" onclick="submitRequest()">TRANSMIT REQUEST</button>
+            <div id="status_msg"></div>
+        </div>
     </div>
-    
-    <div class="panel" id="inbox-panel" style="display:none;">
-        <h3>INBOX NOTIFICATIONS</h3>
-        <div id="inbox-messages"></div>
+
+    <div id="sec-updates" class="container">
+        <div class="panel">
+            <h3>SYSTEM UPDATES & ROADMAP</h3>
+            <ul>
+                <li>Upcoming Update: Full Arabic Language Support</li>
+                <li>Upcoming Update: Full German Language Support</li>
+                <li>Active System: Real-Time Auto Sync Engine</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Status Popup Modal -->
+<div id="status-modal">
+    <div class="modal-content">
+        <button class="translate-btn" onclick="toggleTranslation()">TRANSLATE / ترجمة</button>
+        <h3 id="modal-title" style="margin-top: 0; color:#4d79ff;">REQUEST STATUS CENTER</h3>
+        <hr style="border-color:#222; margin-bottom:20px;">
+        <div id="modal-body"></div>
+        <div style="margin-top: 25px; text-align: right;">
+            <button onclick="closeStatusModal()" style="width: auto; padding: 8px 25px;">CLOSE</button>
+        </div>
     </div>
 </div>
 
 <script>
+    let isArabic = false;
     const cursor = document.getElementById('galaxy-cursor');
     document.addEventListener('mousemove', (e) => {
         cursor.style.left = e.clientX + 'px';
@@ -64,66 +120,72 @@
 
     if(localStorage.getItem('user_logged_in')) {
         document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-        checkInbox();
+        document.getElementById('app').style.display = 'block';
     }
 
     function login() {
-        const user = document.getElementById('username').value;
-        if(user.trim() !== "") {
+        const user = document.getElementById('username').value.trim();
+        if(user !== "") {
             localStorage.setItem('user_logged_in', user);
             document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-            checkInbox();
+            document.getElementById('app').style.display = 'block';
         }
+    }
+
+    function showTab(tab) {
+        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+        document.querySelectorAll('.menu button').forEach(b => b.classList.remove('active'));
+        document.getElementById('sec-' + tab).style.display = 'block';
+        document.getElementById('tab-' + tab).classList.add('active');
     }
 
     function enforceEnglish(field) {
         field.value = field.value.replace(/[^a-zA-Z0-9\s!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g, '');
     }
 
-    const badWords = ["noob", "idiot", "stupid", "dumb", "fool"]; 
+    // Advanced Ultra-Fast Security Pattern Matching Engine
+    const bannedPatterns = [/noob/i, /idiot/i, /stupid/i, /dumb/i, /fool/i, /hack/i, /bypass/i, /trash/i, /abuse/i, /f[u*@]ck/i, /s[h*@]it/i, /b[i*@]tch/i];
 
-    function checkContent(field) {
-        let text = field.value.toLowerCase();
-        let isBanned = badWords.some(word => text.includes(word));
-        
-        if(isBanned) {
-            let blockUntil = Date.now() + (6 * 60 * 1000); 
-            localStorage.setItem('block_time', blockUntil);
-            field.value = "";
-            applyBlock();
+    function scanInput(field) {
+        let val = field.value;
+        for(let pattern of bannedPatterns) {
+            if(pattern.test(val)) {
+                let blockUntil = Date.now() + (6 * 60 * 1000);
+                localStorage.setItem('block_time', blockUntil);
+                field.value = "";
+                applyBlock();
+                break;
+            }
         }
     }
 
     function applyBlock() {
         let blockTime = localStorage.getItem('block_time');
-        if(blockTime && Date.now() < blockTime) {
+        if(blockTime && Date.now() < parseInt(blockTime)) {
             document.getElementById('submit_btn').disabled = true;
             document.getElementById('discord_id').disabled = true;
             document.getElementById('collab_reason').disabled = true;
-            document.getElementById('status_msg').innerHTML = "<span class='warning'>SECURITY TRIGGERED. ACCESS BLOCKED FOR 6 MINUTES.</span>";
-            setTimeout(applyBlock, 1000);
+            document.getElementById('status_msg').innerHTML = "<span class='warning'>SECURITY TRIGGERED: HIGH THREAT PATTERN DETECTED. SYSTEM BLOCKED FOR 6 MINUTES.</span>";
         } else {
             document.getElementById('submit_btn').disabled = false;
             document.getElementById('discord_id').disabled = false;
             document.getElementById('collab_reason').disabled = false;
-            document.getElementById('status_msg').innerHTML = "";
+            if(document.getElementById('status_msg').innerText.includes('SECURITY TRIGGERED')) {
+                document.getElementById('status_msg').innerHTML = "";
+            }
             localStorage.removeItem('block_time');
         }
     }
-    applyBlock();
 
     function submitRequest() {
         let lastSubmit = localStorage.getItem('last_submit_time');
         if(lastSubmit && Date.now() < parseInt(lastSubmit) + (24 * 60 * 60 * 1000)) {
-            document.getElementById('status_msg').innerHTML = "<span class='warning'>You must wait 24 hours before submitting another request.</span>";
+            document.getElementById('status_msg').innerHTML = "<span class='warning'>Rate Limit: You must wait 24 hours before submitting another request.</span>";
             return;
         }
 
-        let discord = document.getElementById('discord_id').value;
-        let reason = document.getElementById('collab_reason').value;
-        
+        let discord = document.getElementById('discord_id').value.trim();
+        let reason = document.getElementById('collab_reason').value.trim();
         if(!discord || !reason) return;
 
         let requests = JSON.parse(localStorage.getItem('supernova_requests') || '[]');
@@ -134,26 +196,91 @@
 
         document.getElementById('discord_id').value = "";
         document.getElementById('collab_reason').value = "";
-        document.getElementById('status_msg').innerHTML = "<span class='success'>Wait for your request, it will be in the accept/reject list. You will be notified if you return to the site. It may take up to two days. If not accepted or rejected, you can submit another request.</span>";
+        document.getElementById('status_msg').innerHTML = "<span class='success'>Request transmitted. Check Status Center for updates.</span>";
+        openStatusModal();
     }
 
-    function checkInbox() {
-        let responses = JSON.parse(localStorage.getItem('supernova_responses') || '[]');
+    function openStatusModal() {
+        document.getElementById('status-modal').style.display = 'flex';
+        renderModalContent();
+    }
+
+    function closeStatusModal() {
+        document.getElementById('status-modal').style.display = 'none';
+    }
+
+    function toggleTranslation() {
+        isArabic = !isArabic;
+        renderModalContent();
+    }
+
+    function renderModalContent() {
         let user = localStorage.getItem('user_logged_in');
-        let myResponses = responses.filter(r => r.user === user);
+        let requests = JSON.parse(localStorage.getItem('supernova_requests') || '[]');
+        let responses = JSON.parse(localStorage.getItem('supernova_responses') || '[]');
         
-        if(myResponses.length > 0) {
-            document.getElementById('inbox-panel').style.display = 'block';
+        let myReq = requests.filter(r => r.user === user);
+        let myRes = responses.filter(r => r.user === user);
+        let body = document.getElementById('modal-body');
+        let title = document.getElementById('modal-title');
+
+        if(isArabic) {
+            title.innerText = "مركز حالة الطلبات والإشعارات";
+            if(myReq.length === 0) {
+                body.innerHTML = "<p>لا توجد طلبات مقدمة حالياً.</p>";
+                return;
+            }
             let html = "";
-            myResponses.forEach(r => {
-                let color = r.status === 'ACCEPTED' ? '#33ff77' : '#ff3333';
-                html += `<div style="border-left: 3px solid ${color}; padding-left: 10px; margin-bottom: 10px;">
-                            <strong>${r.status}</strong><br>${r.message}
-                         </div>`;
+            myReq.forEach(req => {
+                let resp = myRes.find(r => r.reqId === req.id);
+                if(!resp) {
+                    html += `<div style="border-left: 3px solid #ffcc00; padding-left: 10px; margin-bottom: 15px;">
+                                <strong style="color:#ffcc00;">حالة الطلب: قيد الانتظار والمراجعة</strong>
+                                <p style="margin:5px 0; color:#aaa;">انتظر طلبك سيكون بقائمة القبول والرفض وراح يتم تنبيهك لو رجعت الموقع. قد يستغرق الأمر إلى يومين. إذا لم يتم قبولك أو رفضك يمكنك تقديم طلب آخر بعد انقضاء المدة.</p>
+                             </div>`;
+                } else {
+                    let color = resp.status === 'ACCEPTED' ? '#33ff77' : '#ff3333';
+                    let statusTxt = resp.status === 'ACCEPTED' ? 'تم القبول' : 'تم الرفض';
+                    html += `<div style="border-left: 3px solid ${color}; padding-left: 10px; margin-bottom: 15px;">
+                                <strong style="color:${color};">النتيجة: ${statusTxt}</strong>
+                                <p style="margin:5px 0;"><strong>الرسالة:</strong> ${resp.message}</p>
+                             </div>`;
+                }
             });
-            document.getElementById('inbox-messages').innerHTML = html;
+            body.innerHTML = html;
+        } else {
+            title.innerText = "REQUEST STATUS CENTER";
+            if(myReq.length === 0) {
+                body.innerHTML = "<p>No active requests found.</p>";
+                return;
+            }
+            let html = "";
+            myReq.forEach(req => {
+                let resp = myRes.find(r => r.reqId === req.id);
+                if(!resp) {
+                    html += `<div style="border-left: 3px solid #ffcc00; padding-left: 10px; margin-bottom: 15px;">
+                                <strong style="color:#ffcc00;">STATUS: PENDING REVIEW</strong>
+                                <p style="margin:5px 0; color:#aaa;">Wait for your request, it will be in the accept/reject list. You will be notified if you return to the site. It may take up to two days. If not accepted or rejected, you can submit another request.</p>
+                             </div>`;
+                } else {
+                    let color = resp.status === 'ACCEPTED' ? '#33ff77' : '#ff3333';
+                    html += `<div style="border-left: 3px solid ${color}; padding-left: 10px; margin-bottom: 15px;">
+                                <strong style="color:${color};">DECISION: ${resp.status}</strong>
+                                <p style="margin:5px 0;"><strong>Message:</strong> ${resp.message}</p>
+                             </div>`;
+                }
+            });
+            body.innerHTML = html;
         }
     }
+
+    // Real-Time Auto-Sync Engine (Syncs every 2 seconds)
+    setInterval(() => {
+        applyBlock();
+        if(document.getElementById('status-modal').style.display === 'flex') {
+            renderModalContent();
+        }
+    }, 2000);
 </script>
 </body>
 </html>
